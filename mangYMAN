@@ -1,0 +1,28 @@
+from qiskit import QuantumCircuit, transpile, assemble, Aer, execute
+import numpy as np
+
+# Definir el circuito cuántico
+n_qubits = 2
+n_bits = 2
+qc = QuantumCircuit(n_qubits, n_bits)
+
+# Parámetros de rotación
+angle = np.pi / 4  # Ángulo de rotación
+
+# Aplicar las compuertas cuánticas
+qc.rx(angle, 0)  # Rotación de ángulo 'angle' al qubit 0
+qc.cx(0, 1)  # Compuerta CNOT (control: qubit 0, objetivo: qubit 1)
+
+# Medir los qubits
+qc.measure(range(n_qubits), range(n_bits))
+
+# Compilar y ejecutar el circuito en un simulador cuántico
+simulator = Aer.get_backend('qasm_simulator')
+compiled_circuit = transpile(qc, simulator)
+qobj = assemble(compiled_circuit, shots=1000)
+job = simulator.run(qobj)
+result = job.result()
+
+# Obtener los resultados
+counts = result.get_counts(qc)
+print(counts)
